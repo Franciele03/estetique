@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estetique</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="overlay">
+      <h1 class="title">Estetique</h1>
+      <p class="subtitle">Beleza na sua casa ou no salão. Você escolhe.</p>
+      <div class="buttons">
+        <a href="#" class="btn">Agendar Serviço</a>
+        <a href="#" class="btn btn-outline">Sou Profissional</a>
+      </div>
+    </div>
+    <title>Agendamento | Estetique</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="form-container">
+      <h2>Agende seu atendimento</h2>
+      <form id="form-agendamento">
+        <input type="text" placeholder="Nome completo" name="nome" required />
+        <input type="text" placeholder="CPF" name="cpf" required />
+  
+        <select name="tipo" required>
+          <option value="">Tipo de atendimento</option>
+          <option value="casa">Em Casa</option>
+          <option value="salao">No Salão</option>
+        </select>
+  
+        <select name="profissional" required>
+          <option value="">Escolha o profissional</option>
+          <option value="1">Maria Lima</option>
+          <option value="2">João Souza</option>
+          <option value="3">Ana Paula</option>
+        </select>
+  
+        <input type="datetime-local" name="datahora" required />
+  
+        <button type="submit" class="btn">Confirmar Agendamento</button>
+      </form>
+    </div>
+    <script>
+        document.getElementById('form-agendamento').addEventListener('submit', async function (e) {
+          e.preventDefault();
+        
+          const nome = e.target.nome.value;
+          const cpf = e.target.cpf.value;
+          const tipo = e.target.tipo.value;
+          const profissionalId = parseInt(e.target.profissional.value);
+          const dataHora = e.target.datahora.value;
+        
+          try {
+            // Busca o usuário pelo CPF (simulação)
+            const userResp = await fetch(`http://localhost:5000/api/Users/login?cpf=${cpf}&senha=${cpf}`);
+            const user = await userResp.json();
+        
+            if (!user.id) {
+              alert('Usuário não encontrado. Cadastre-se primeiro.');
+              return;
+            }
+        
+            const body = {
+              clienteId: user.id,
+              profissionalId: profissionalId,
+              dataHora: dataHora,
+              local: tipo
+            };
+        
+            const res = await fetch('http://localhost:5000/api/appointments', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(body)
+            });
+        
+            if (res.ok) {
+              alert('Agendamento realizado com sucesso!');
+              document.getElementById('form-agendamento').reset();
+            } else {
+              const error = await res.text();
+              alert('Erro ao agendar: ' + error);
+            }
+          } catch (err) {
+            console.error(err);
+            alert('Erro na requisição. Verifique o servidor.');
+          }
+        });
+        </script>
+        <title>Cadastro | Estetique</title>
+        <link rel="stylesheet" href="style.css">
+      </head>
+      <body>
+        <div class="form-container">
+          <h2>Cadastre-se na Estetique</h2>
+          <form id="form-cadastro">
+            <input type="text" name="nome" placeholder="Nome completo" required>
+            <input type="text" name="cpf" placeholder="CPF" required>
+            <input type="email" name="email" placeholder="E-mail" required>
+            <input type="text" name="telefone" placeholder="Telefone" required>
+            <input type="text" name="endereco" placeholder="Endereço" required>
+            
+            <select name="tipo" required>
+              <option value="">Tipo de usuário</option>
+              <option value="Cliente">Cliente</option>
+              <option value="Profissional">Profissional</option>
+            </select>
+            
+            <select name="plano">
+              <option value="">Plano (somente para profissionais)</option>
+              <option value="1">Básico</option>
+              <option value="2">Avançado</option>
+              <option value="3">Premium</option>
+            </select>
+      
+            <input type="password" name="senha" placeholder="Senha" required>
+      
+            <button type="submit" class="btn">Cadastrar</button>
+          </form>
+        </div>
+      
+        <script>
+          document.getElementById('form-cadastro').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const form = e.target;
+      
+            const body = {
+              nome: form.nome.value,
+              cpf: form.cpf.value,
+              email: form.email.value,
+              telefone: form.telefone.value,
+              endereco: form.endereco.value,
+              tipo: form.tipo.value,
+              planoId: form.plano.value || null,
+              senhaHash: form.senha.value
+            };
+      
+            try {
+              const res = await fetch('http://localhost:5000/api/users/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+              });
+      
+              if (res.ok) {
+                alert('Cadastro realizado com sucesso!');
+                form.reset();
+              } else {
+                alert('Erro ao cadastrar. Verifique os dados.');
+              }
+            } catch (err) {
+              alert('Erro ao conectar com o servidor.');
+              console.error(err);
+            }
+          });
+        </script>
+        <title>Meus Agendamentos | Estetique</title>
+        <link rel="stylesheet" href="style.css">
+      </head>
+      <body>
+        <div class="form-container">
+          <h2>Agendamentos</h2>
+          <input type="text" id="cpf" placeholder="Digite seu CPF para buscar">
+          <button class="btn" onclick="buscarAgendamentos()">Buscar</button>
+      
+          <div id="lista-agendamentos" style="margin-top: 20px;"></div>
+        </div>
+      
+        <script>
+          async function buscarAgendamentos() {
+            const cpf = document.getElementById('cpf').value;
+      
+            const userRes = await fetch(`http://localhost:5000/api/users/login?cpf=${cpf}&senha=${cpf}`);
+            const user = await userRes.json();
+      
+            const res = await fetch(`http://localhost:5000/api/appointments`);
+            const agendamentos = await res.json();
+      
+            const lista = agendamentos
+              .filter(a => a.clienteId === user.id)
+              .map(a => `
+                <div style="text-align: left; margin-bottom: 15px;">
+                  <strong>Data:</strong> ${new Date(a.dataHora).toLocaleString()}<br>
+                  <strong>Local:</strong> ${a.local}<br>
+                  <strong>Status:</strong> ${a.status}
+                </div>
+              `).join('');
+      
+            document.getElementById('lista-agendamentos').innerHTML = lista || 'Nenhum agendamento encontrado.';
+          }
+        </script>
+        <div style="text-align:center; margin-top:30px;">
+            <h3>Pagamento</h3>
+            <button class="btn" onclick="simularPagamento()">Pagar com Cartão</button>
+          </div>
+          
+          <script>
+          async function simularPagamento() {
+            const appointmentId = prompt("ID do agendamento:");
+          
+            const res = await fetch('http://localhost:5000/api/payments', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                appointmentId: parseInt(appointmentId),
+                valor: 100 // valor fixo simulado
+              })
+            });
+          
+            if (res.ok) {
+              alert('Pagamento realizado com sucesso!');
+            } else {
+              alert('Erro no pagamento.');
+            }
+          }
+          </script>
+  </header>
+</body>
+</html>
