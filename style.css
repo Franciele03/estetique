@@ -17,7 +17,7 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    color: #fff;
+    color: #0a0a0a;
   }
   
   .overlay {
@@ -43,7 +43,7 @@
   }
   
   .btn {
-    background-color: #fff;
+    background-color: #080808;
     color: #FF8C00;
     padding: 12px 30px;
     border-radius: 30px;
@@ -58,12 +58,12 @@
   
   .btn-outline {
     background-color: transparent;
-    border: 2px solid #fff;
-    color: #fff;
+    border: 2px solid #050505;
+    color: #050505;
   }
   
   .btn-outline:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(10, 10, 10, 0.2);
   }
 
   .form-container {
@@ -87,7 +87,7 @@
     padding: 12px;
     margin: 10px 0;
     border-radius: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid #131212;
     font-size: 1rem;
   }
   
